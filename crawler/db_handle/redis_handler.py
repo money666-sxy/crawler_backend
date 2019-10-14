@@ -4,6 +4,8 @@ import sys
 import redis
 from threading import Thread
 
+from crawler.items.articles import Article
+
 
 class RedisHandler(object):
     def __init__(self):
@@ -23,11 +25,21 @@ class RedisHandler(object):
             if item['type'] == 'pmessage' or item['type'] == 'message':
                 print(item['data'])
 
-    def hset(self, article):
-        article_info = {"title": article.title, "content": article.content, "author_name": article.author.nickname}
+    def hset_(self, article):
+        article_info = {'id': str(article.id), 'title': article.title, 'content': article.content, 'slug': article.slug,
+                       'author_id': article.author.id, 'author_nick_name': article.author.nickname,
+                       'notebook_id': article.notebook.id, 'notebook_name': article.notebook.name,
+                       'commentable': article.commentable, 'public_comments_count': article.public_comments_count,
+                       'like_count': article.views_count, 'total_rewards_count': article.total_rewards_count,
+                       'first_shared_at': article.first_shared_at}
+        print(article_info['slug'])
         for key, value in article_info.items():
-            self.__conn.hset(article_info['title'], "%s" % key, "%s" % value)
-            print(article.title)
+            self.__conn.hset(article_info['title'], "%s" % key, "%s" % str(value))
+            # print(self.__conn.hget(article_info['title'], "slug"))
+            # print(article.title)
+
+    def hget_(self, title, key):
+        return self.__conn.hget(title, key)
 
     def set_(self, key, val):
         self.__conn.set(key, val)
@@ -35,15 +47,15 @@ class RedisHandler(object):
     def get_(self, key):
         return self.__conn.get(key)
 
+    def query_keywords_title(self, keyword):
+        raw_title_list = self.__conn.keys("*%s*" % keyword)
+        title_list = [item.decode() for item in raw_title_list]
+        return title_list
+
 
     # def hget(self, list_name):
         # print(self.__conn.hget(list_name, 0, -1))
 
-
 if __name__ == "__main__":
     rd = RedisHandler()
-    # thread_subscribe = Thread(target=rd.subscribe)
-    #     # thread_publish = Thread(target=rd.publish, args=("hello world",))
-    #     # thread_subscribe.start()
-    #     # thread_publish.start()
 

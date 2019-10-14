@@ -78,24 +78,26 @@ class Parser(object):
             # try:
             text = json.loads(info)['entries']
             for item in text:
-                result_dict = {}
                 article = Article()
 
                 article.likes_count = item['likes_count']
                 article.first_shared_at = item['first_shared_at']
                 article.like_rate = like_rate(article)
+
                 if article.like_rate > 0.51:
-                    print(article.like_rate)
+                    # print(article.like_rate)
+                    pass
                 else:
                     continue
+
 
                 article.id = item['id']
                 article.title = text_fix(item['title'])
                 article.content = text_fix(item['content'])
-                article.slug = item['slug']
                 article.author.id = item['user']['id']
                 article.author.nickname = text_fix(
                     item['user']['nickname'])
+                article.slug = item ['slug']
                 article.author.author_avatar_url = item['user']['avatar_url']
                 article.notebook.id = item['notebook']['id']
                 article.notebook.name = item['notebook']['name']
@@ -103,13 +105,14 @@ class Parser(object):
                 article.public_comments_count = item['public_comments_count']
                 article.views_count = item['views_count']
                 article.total_rewards_count = item['total_rewards_count']
+                print(article.title)
 
                 result_dict = {'id': article.id, 'title': article.title, 'content': article.content, 'slug': article.slug, 'author_id': article.author.id, 'author_nick_name': article.author.nickname, 'notebook_id': article.notebook.id, 'notebook_name': article.notebook.name,
                                'commentable': article.commentable, 'public_comments_count': article.public_comments_count, 'like_count': article.views_count, 'total_rewards_count': article.total_rewards_count, 'first_shared_at': article.first_shared_at}
                 self.search_result.append(result_dict)
                 self.db_queue.put(article)
-                # except:
-                #     raise Exception("赋值出错")
+        #         except:
+        #             raise Exception("赋值出错")
         # except Exception as e:
         #     print(e)
 
@@ -117,25 +120,5 @@ class Parser(object):
         '''筛选 like_rate > 3 存入redis'''
         while True:
             article = self.db_queue.get()
-            print(article.title)
-            # rd.hset(article)
-        # try:
-        #     while True:
-        #         article = Parser.db_queue.get()
+            rd.hset_(article)
 
-            # if like_rate(article) > 3:
-            #     print(article.title)
-
-            # rd.hset(article)
-
-            # try:
-            #     if like_rate(article) > 3:
-            #         rd.publish(b'%s' % article.title)
-            #     # print(article_db.content)
-            #     # print(article_db.author.id)
-            #     # print(article_db.first_shared_at)
-            # except:
-            #     raise Exception("get article_db error")
-
-        # except Exception as e:
-            # print(e)

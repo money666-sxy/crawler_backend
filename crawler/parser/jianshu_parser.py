@@ -28,8 +28,8 @@ class JianshuParser(Parser):
 
     def __add_url(self, keyword):
         '''添加待处理的url'''
-        page_num = self.getPageNum(keyword)
-        for i in range(page_num):
+        # page_num = self.getPageNum(keyword)
+        for i in range(100):
             url = 'https://www.jianshu.com/search/do?q=' + keyword + '&type=note&page=' + str(
                 i) + '&order_by=default'
             # print(url)

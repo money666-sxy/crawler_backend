@@ -11,11 +11,12 @@ import aiohttp
 from crawler.info_queues.raw_info_queue import RawInfoQueue
 from crawler.info_queues.db_queue import DBQueue
 from crawler.items.articles import Article
-from crawler.tools import text_fix
-from crawler.tools import like_rate
+from crawler.tools import textFix, getLikeRate, isHot
 from crawler.db_handle.redis_handler import RedisHandler
+from crawler.db_handle.sql_handler import SQLHandler
 
-rd = RedisHandler()
+redis_handler = RedisHandler()
+sql_handler = SQLHandler()
 
 
 class Parser(object):
@@ -82,9 +83,9 @@ class Parser(object):
 
                 article.likes_count = item['likes_count']
                 article.first_shared_at = item['first_shared_at']
-                article.like_rate = like_rate(article)
+                article.like_rate = getLikeRate(article)
 
-                if article.like_rate > 0.51:
+                if article.like_rate > 0.1:
                     # print(article.like_rate)
                     pass
                 else:
@@ -92,10 +93,10 @@ class Parser(object):
 
 
                 article.id = item['id']
-                article.title = text_fix(item['title'])
-                article.content = text_fix(item['content'])
+                article.title = textFix(item['title'])
+                article.content = textFix(item['content'])
                 article.author.id = item['user']['id']
-                article.author.nickname = text_fix(
+                article.author.nickname = textFix(
                     item['user']['nickname'])
                 article.slug = item ['slug']
                 article.author.author_avatar_url = item['user']['avatar_url']
@@ -120,5 +121,7 @@ class Parser(object):
         '''筛选 like_rate > 3 存入redis'''
         while True:
             article = self.db_queue.get()
-            rd.hset_(article)
+            if isHot(article):
+                redis_handler.hset(article)
+            sql_handler.insertArticle(article)
 

@@ -6,23 +6,23 @@ from flask_cors import CORS
 
 from crawler.parser.jianshu_parser import JianshuParser
 from crawler.db_handle.redis_handler import RedisHandler
-from crawler.seacher.crawler_searcher import search_crawler_keywords
-from crawler.seacher.redis_searcher import search_redis_keywords
+from crawler.seacher.crawler_searcher import searchCrawlerKeywords
+from crawler.seacher.redis_searcher import searchRedisKeywords
 
 redis_handler = RedisHandler()
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-jianshu_parser = JianshuParser()
-
 @app.route('/', methods=['GET'])
-def get_articles():
+def getArticles():
     if request.method == 'GET':
+        start = time.time()
         keywords = request.args.get("key_words")
-        search_result = search_redis_keywords(keywords)
+        search_result = searchRedisKeywords(keywords)
         if not search_result:
-            search_result = search_crawler_keywords(keywords)
+            search_result = searchCrawlerKeywords(keywords)
+        print("spend: ", time.time() - start)
     return json.dumps(search_result, ensure_ascii=False)
 
 

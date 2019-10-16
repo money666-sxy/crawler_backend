@@ -4,7 +4,7 @@ from crawler.parser.zhihu_parser import ZhihuParser
 
 jianshu_parser = JianshuParser()
 
-def search_crawler_keywords(keywords):
+def searchCrawlerKeywords(keywords):
     jianshu_parser.searchKeyWord(keywords)
     search_result = list(jianshu_parser.search_result)
     jianshu_parser.start_urls.clear()

@@ -25,7 +25,7 @@ class RedisHandler(object):
             if item['type'] == 'pmessage' or item['type'] == 'message':
                 print(item['data'])
 
-    def hset_(self, article):
+    def hset(self, article):
         article_info = {'id': str(article.id), 'title': article.title, 'content': article.content, 'slug': article.slug,
                        'author_id': article.author.id, 'author_nick_name': article.author.nickname,
                        'notebook_id': article.notebook.id, 'notebook_name': article.notebook.name,
@@ -38,18 +38,22 @@ class RedisHandler(object):
             # print(self.__conn.hget(article_info['title'], "slug"))
             # print(article.title)
 
-    def hget_(self, title, key):
+    def hget(self, title, key):
         return self.__conn.hget(title, key)
 
-    def set_(self, key, val):
+    def set(self, key, val):
         self.__conn.set(key, val)
 
-    def get_(self, key):
+    def get(self, key):
         return self.__conn.get(key)
 
-    def query_keywords_title(self, keyword):
-        raw_title_list = self.__conn.keys("*%s*" % keyword)
-        title_list = [item.decode() for item in raw_title_list]
+    def queryKeywordsTitle(self, keyword):
+        title_list = []
+        search_list = [keyword, keyword.lower(), keyword.upper(), keyword.capitalize()]
+        for item in search_list:
+            raw_title_list = self.__conn.keys("*%s*" % item)
+            for each in raw_title_list:
+                title_list.append(each.decode())
         return title_list
 
 

@@ -1,7 +1,7 @@
 import datetime
 
 
-def like_rate(article):
+def getLikeRate(article):
     '''发布时间/点赞数'''
 
     '''article.first_shared_at() 2019-04-21T07:22:12.000Z'''
@@ -22,8 +22,12 @@ def like_rate(article):
     return like_rate
 
 
-def text_fix(text):
+def textFix(text):
     '''去除json信息中的html标签'''
     text = text.replace(
         r"<em class='search-result-highlight'>", "").replace(r"</em>", "")
     return text
+
+
+def isHot(article):
+    return True

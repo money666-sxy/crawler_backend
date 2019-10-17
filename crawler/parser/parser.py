@@ -120,8 +120,11 @@ class Parser(object):
     def save2db(self):
         '''筛选 like_rate > 3 存入redis'''
         while True:
-            article = self.db_queue.get()
-            if isHot(article):
-                redis_handler.hset(article)
-            sql_handler.insertArticle(article)
+            try:
+                article = self.db_queue.get()
+                if isHot(article):
+                    redis_handler.hset(article)
+                sql_handler.insertArticle(article)
+            except Exception as e:
+                print(e)
 

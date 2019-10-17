@@ -32,7 +32,6 @@ class RedisHandler(object):
                        'commentable': article.commentable, 'public_comments_count': article.public_comments_count,
                        'like_count': article.views_count, 'total_rewards_count': article.total_rewards_count,
                        'first_shared_at': article.first_shared_at}
-        print(article_info['slug'])
         for key, value in article_info.items():
             self.__conn.hset(article_info['title'], "%s" % key, "%s" % str(value))
             # print(self.__conn.hget(article_info['title'], "slug"))
@@ -48,13 +47,14 @@ class RedisHandler(object):
         return self.__conn.get(key)
 
     def queryKeywordsTitle(self, keyword):
+        '''根据key查询文章'''
         title_list = []
         search_list = [keyword, keyword.lower(), keyword.upper(), keyword.capitalize()]
         for item in search_list:
             raw_title_list = self.__conn.keys("*%s*" % item)
             for each in raw_title_list:
                 title_list.append(each.decode())
-        return title_list
+        return set(title_list)
 
 
     # def hget(self, list_name):

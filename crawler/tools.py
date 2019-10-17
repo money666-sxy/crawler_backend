@@ -28,6 +28,8 @@ def textFix(text):
         r"<em class='search-result-highlight'>", "").replace(r"</em>", "")
     return text
 
+def contentFix(content):
+    return r'%s' % content
 
 def isHot(article):
     return True
